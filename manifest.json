@@ -5,11 +5,16 @@
   "version": "0.0.2",
   "permissions": [
     "http://submanga.com/",
-    "http://img.submanga.com/*"
+    "http://img.submanga.com/",
+    "http://img.submanga.com/"
   ],
   "content_scripts":[
     {
-	    "matches":["http://submanga.com/"],
+	    "matches":[
+        "http://submanga.com/",
+        "http://img.submanga.com/*",
+        "http://omg.submanga.com/*"
+      ],
     	"js":[
         "contentscript.js"
         ],

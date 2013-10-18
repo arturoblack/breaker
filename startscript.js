@@ -1,10 +1,51 @@
-
-function downloadThisForMePls(id,name,cap){
-  lista = getCapImgList(id)
-  console.log(lista);
+hs = window.location.hostname;
+if( hs=="img.submanga.com" || hs == "omg.submanga.com"){
+  console.log("SS load in static page");
+  params = window.location.search;
+  list_uri = params.split("&");
+  name = list_uri[0].split("=")[1];
+  cap = list_uri[1].split("=")[1];
+  obj =  list_uri[2].split("=")[1];
+  lista = JSON.parse(obj.replace(/%22/g,'"'));
+  createZipPkg(name,cap,lista);
 }
 
-function createZipPackage(lista, calback){
+function downloadThisForMePls(id,name,cap){
+  console.log("start"+name);
+  getCapImgList(id,name,cap,function(lista,name,cap){
+    str = JSON.stringify(lista);
+    sd = lista[0].substring(6,10); // http://img.submanga.com/pages/2/205/205951660/1.jpg
+    uri = "http://"+sd+".submanga.com/?name=" + uf(name) +"&cap="+cap+ "&lista="+str;
+    console.log(uri)
+    alert("redirect");
+    location.href = uri;
+  });
+  
+  // location.href = uri + "?name=" + uf(name) +"cap="+cap+ "&lista="+uf(str);
+  
+}
+function uf(str) {
+  str = escape(str);
+  str = str.replace('+', '%2B');
+  str = str.replace('%20', '+');
+  str = str.replace('*', '%2A');
+  str = str.replace('/', '%2F');
+  str = str.replace('@', '%40');
+  return str;
+}
+
+function urldecode(str) {
+  str = str.replace('+', ' ');
+  str = unescape(str);
+  return str;
+}
+function luf(list){
+  for(i=0;i<list.length;i++){
+
+  }
+}
+
+function createZipPackage(lista){
   console.log("creando zip");
   var zip = new JSZip();
   var pkg = zip.folder("nombredelcapynum");
@@ -37,7 +78,7 @@ function createZipPackage(lista, calback){
   // location.href="data:application/zip;base64,"+content;
 }
 
-function getCapImgList(id){
+function getCapImgList(id,name,cap,callback){
     // console.log(id);
     //lista del las urls de la imagenes
     url="http://submanga.com/c/"+id;
@@ -58,7 +99,7 @@ function getCapImgList(id){
         }
       } 
       console.log(lista_urls);
-      createZipPackage(lista_urls);
+      callback(lista_urls,name,cap);
     });
 }
 
@@ -94,4 +135,46 @@ function getCountForSelect(html){
   }  
 }
 
+function createZipPkg(name,cap,lista){
+  console.log("init zip pkg");
+  console.log("creando zip");
+  var zip = new JSZip();
+  var pkg = zip.folder("nombredelcapynum");
+  zip.file("Readme.txt", "chamullo\n");
+var count = 1;
+var max = lista.length;
+console.log("trabajando en "+lista.length + " imagenes")
+var images=[];
+for(i=0;i<lista.length;i++){
 
+    images[i] = new Image();
+    images[i].onload = function(){
+      img =this;
+      // img.crossOrigin = ''; // no credentials flag. Same as img.crossOrigin='anonymous'
+      canvas = document.createElement('canvas');
+      context = canvas.getContext('2d');
+      context.drawImage(img, 0, 0 );
+      // myData = context.getImageData(0, 0, img.width, img.height);
+      myData = canvas.toDataURL().replace("data:image/png;base64,","");
+      console.log(myData)
+      // "data:image/jpeg;base64,"+
+      console.log("work in image n "+count);
+      document.write("<br/>work in image n "+count);
+      // pkg.file( ""+i+".jpg", img);
+      pkg.file(""+count+".png", myData, {base64: true});
+      if(count<max){
+        count++;
+      }
+      else{
+        var content = zip.generate();
+        console.log("finalizando empaquetado");
+        location.href="data:application/zip;base64,"+content;
+      }
+    };
+    images[i].crossOrigin = 'anonymous';
+    images[i].src = lista[i];
+      
+  }
+
+  
+}
