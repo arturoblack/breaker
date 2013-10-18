@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+  "name": "breaker",
+  "description": "Breaker SubManga Downloader.",
+  "version": "0.0.2",
+  "permissions": [
+    "http://submanga.com/",
+    "http://img.submanga.com/*"
+  ],
+  "content_scripts":[
+    {
+	    "matches":["http://submanga.com/"],
+    	"js":[
+        "contentscript.js"
+        ],
+      "run_at":"document_end"
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "web_accessible_resources":
+  [
+    "startscript.js",
+    "jszip/jszip.js",
+    "jszip/jszip-load.js",
+    "jszip/jszip-deflate.js",
+    "jszip/jszip-inflate.js",
+    "jszip/rawdeflate.min.js.map"
+  ]
+}
